@@ -679,25 +679,25 @@
     <h2 class="section-title">Social &amp; <span style="color:var(--neon-cyan)">Contact</span></h2>
   </div>
   <div class="contact-grid">
-    <a class="contact-card reveal" href="https://instagram.com/hadhirocks" target="_blank">
+    <a class="contact-card reveal" href="https://www.instagram.com/h_a_d_h_i______5_0_5_5/" target="_blank">
       <div class="contact-icon insta-icon">📸</div>
       <h3>Instagram</h3>
-      <span>@hadhirocks</span>
+      <span>@h_a_d_h_i______5_0_5_5</span>
     </a>
-    <a class="contact-card reveal reveal-delay-1" href="https://wa.me/91XXXXXXXXXX" target="_blank">
+    <a class="contact-card reveal reveal-delay-1" href="https://wa.me/918089189231" target="_blank">
       <div class="contact-icon wa-icon">💬</div>
       <h3>WhatsApp</h3>
-      <span>+91 XXXXX XXXXX</span>
+      <span>+91 80891 89231</span>
     </a>
     <a class="contact-card reveal reveal-delay-2" href="mailto:hadhirocks@gmail.com">
       <div class="contact-icon email-icon">✉️</div>
       <h3>Email</h3>
       <span>hadhirocks@gmail.com</span>
     </a>
-    <a class="contact-card reveal reveal-delay-3" href="https://youtube.com/@hadhirocks" target="_blank">
+    <a class="contact-card reveal reveal-delay-3" href="https://www.youtube.com/@hadhirocks3288" target="_blank">
       <div class="contact-icon yt-icon">▶️</div>
       <h3>YouTube</h3>
-      <span>@hadhirocks</span>
+      <span>@hadhirocks3288</span>
     </a>
   </div>
 </section>
@@ -714,18 +714,21 @@
         <div class="form-row">
           <div class="form-group">
             <label>Your Name</label>
-            <input type="text" id="fname" placeholder="Enter your name" />
+            <input type="text" id="fname" name="name" placeholder="Enter your name" />
           </div>
           <div class="form-group">
             <label>Email Address</label>
-            <input type="email" id="femail" placeholder="your@email.com" />
+            <input type="email" id="femail" name="email" placeholder="your@email.com" />
           </div>
         </div>
         <div class="form-group">
           <label>Your Suggestion</label>
-          <textarea id="fmsg" placeholder="Share your ideas, suggestions, or feedback..."></textarea>
+          <textarea id="fmsg" name="suggestion" placeholder="Share your ideas, suggestions, or feedback..."></textarea>
         </div>
-        <button class="btn-submit" onclick="submitFeedback()">Send Feedback ✦</button>
+        <!-- Formspree spam filter -->
+        <input type="text" name="_gotcha" style="display:none" />
+        <input type="hidden" name="_subject" value="New Suggestion — HADHI ROCKS" />
+        <button class="btn-submit" type="button" onclick="submitFeedback()">Send Feedback ✦</button>
       </div>
       <div class="success-msg" id="successMsg">
         <span class="check">✅</span>
@@ -803,14 +806,37 @@ const counterObs = new IntersectionObserver(entries => {
 }, { threshold: 0.5 });
 document.querySelectorAll('[data-target]').forEach(el => counterObs.observe(el));
 
-// ─── Feedback form ────────────────────────────
-function submitFeedback() {
+// ─── Feedback form (Formspree → hadhipallath@gmail.com) ──
+async function submitFeedback() {
   const name  = document.getElementById('fname').value.trim();
   const email = document.getElementById('femail').value.trim();
   const msg   = document.getElementById('fmsg').value.trim();
   if (!name || !msg) { alert('Please fill in your name and suggestion!'); return; }
-  document.getElementById('formContent').style.display = 'none';
-  document.getElementById('successMsg').style.display  = 'block';
+
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://formspree.io/f/xzdwoejz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name, email, suggestion: msg,
+        _subject: 'New Suggestion — HADHI ROCKS' })
+    });
+    if (res.ok) {
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('successMsg').style.display  = 'block';
+    } else {
+      btn.textContent = 'Send Feedback ✦';
+      btn.disabled = false;
+      alert('Oops! Something went wrong. Please try again.');
+    }
+  } catch(e) {
+    btn.textContent = 'Send Feedback ✦';
+    btn.disabled = false;
+    alert('Network error. Please check your connection and try again.');
+  }
 }
 
 // ─── Theme toggle ─────────────────────────────
